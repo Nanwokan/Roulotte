@@ -4,3 +4,4 @@ la-roulotte-kit/
 pnpm-lock.yaml
 pnpm-workspace.yaml
 tsconfig.json
+/generated/prisma
