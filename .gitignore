@@ -1,3 +1,6 @@
 .env
-./node_modules
+node_modules/
 la-roulotte-kit/
+pnpm-lock.yaml
+pnpm-workspace.yaml
+tsconfig.json
