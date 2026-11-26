@@ -1,4 +1,6 @@
-import { getAllDishes, getDishById} from  "../services/dishes.service.js";
+import { AuthHttpError } from "../fourni/auth/errors.js";
+import { dishSchema } from "../schemas/dish.schema.js";
+import { createDishService, getAllDishes, getDishById} from  "../services/dishes.service.js";
 import {getPagination} from "../services/pagination.service.js"
 // controller
 // controller
@@ -54,4 +56,58 @@ export async function getDish(req, res) {
     console.error("Error fetching dish:", error);
     res.status(500).json({ error: "Failed to fetch dish" });
   }
+}
+
+export async function createDish(req, res) {
+
+  const result = dishSchema.safeParse(req.body);
+  if (!result.success) {
+    throw new AuthHttpError(
+      400,
+      "VALIDATION_ERROR",
+      "Données invalides",
+    );
+  }
+
+  // créer le plat (le service lève 409 ou 422 si besoin)
+  const dish = await createDishService(result.data);
+
+  //répondre 201 + Location
+  return res.status(201).location(`/dishes/${dish.id}`).json(dish);
+}
+
+export async function updateDish(req, res) {
+
+  const result = dishSchema.safeParse(req.body);
+  if (!result.success) {
+    throw new AuthHttpError(
+      400,
+      "VALIDATION_ERROR",
+      "Données invalides",
+    );
+  }
+
+  // créer le plat (le service lève 409 ou 422 si besoin)
+  const dish = await updateDishService(result.data);
+
+  //répondre 201 + Location
+  return res.status(201).location(`/dishes/${dish.id}`).json(dish);
+}
+
+export async function deleteDish(req, res) {
+
+  const result = dishSchema.safeParse(req.body);
+  if (!result.success) {
+    throw new AuthHttpError(
+      400,
+      "VALIDATION_ERROR",
+      "Données invalides",
+    );
+  }
+
+  // créer le plat (le service lève 409 ou 422 si besoin)
+  const dish = await deleteDishService(result.data);
+
+  //répondre 201 + Location
+  return res.status(201).location(`/dishes/${dish.id}`).json(dish);
 }

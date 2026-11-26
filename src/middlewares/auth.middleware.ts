@@ -12,3 +12,12 @@ export function requireAuth(req, _res, next) {
   req.user = verifyToken(header.slice(7).trim(), process.env.SECRET_JWT!);
   next();
 }
+
+export function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      throw new AuthHttpError(403, "FORBIDDEN", "Rôle insuffisant")
+    }
+    next()
+  };
+}
