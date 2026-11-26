@@ -1,7 +1,9 @@
 .env
 node_modules/
+dist/
 la-roulotte-kit/
 pnpm-lock.yaml
 pnpm-workspace.yaml
 tsconfig.json
 /generated/prisma
+.vscode/
