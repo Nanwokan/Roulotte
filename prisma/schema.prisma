@@ -23,7 +23,7 @@ model User {
   email String @unique
   name String
   passwordHash String
-  role Role
+  role Role @default(CUSTOMER)
   createdAt DateTime @default(now())
 
   orders Order []
@@ -33,7 +33,7 @@ model User {
 model Category {
   id Int @id @default(autoincrement())
   name String @unique
-  position String
+  position Int
 
   dishes Dish []
 
@@ -51,9 +51,9 @@ model Dish {
   name String @unique
   description String
   priceCents Float
-  available String
-  stock Int
-  imageUrl String
+  available Boolean @default(true)
+  stock Int?
+  imageUrl String?
   category Category @relation(fields: [categoryId], references: [id])
   categoryId Int
   

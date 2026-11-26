@@ -1,0 +1,87 @@
+import { prisma } from "../src/lib/prisma.js";
+import bcrypt from "bcryptjs";
+
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
+await prisma.user.createMany({
+  data: [
+    {
+      email: "admin@roulotte.test",
+      name: "Alex Admin",
+      passwordHash: await hashPassword("Admin123!"),
+      role: "ADMIN",
+    },
+    {
+      email: "cuisine@roulotte.test",
+      name: "Camille Cuisine",
+      passwordHash: await hashPassword("Cuisine123!"),
+      role: "STAFF",
+    },
+    {
+      email: "client@roulotte.test",
+      name: "Chris Client",
+      passwordHash: await hashPassword("Client123!"),
+      role: "CUSTOMER",
+    },
+  ],
+});
+
+await prisma.category.createMany({
+  data: [
+    { name: "Burgers", position: 1 },
+    { name: "Veggie", position: 2 },
+    { name: "Accompagnements", position: 3 },
+    { name: "Desserts", position: 4 },
+    { name: "Boissons", position: 5 },
+  ],
+});
+
+await prisma.allergen.createMany({
+  data: [
+    { code: "gluten", label: "Gluten" },
+    { code: "crustaces", label: "Crustacés" },
+    { code: "oeufs", label: "Œufs" },
+    { code: "poissons", label: "Poissons" },
+    { code: "arachides", label: "Arachides" },
+    { code: "soja", label: "Soja" },
+    { code: "lait", label: "Lait" },
+    { code: "fruits-a-coque", label: "Fruits à coque" },
+    { code: "celeri", label: "Céleri" },
+    { code: "moutarde", label: "Moutarde" },
+    { code: "sesame", label: "Graines de sésame" },
+    { code: "sulfites", label: "Sulfites" },
+    { code: "lupin", label: "Lupin" },
+    { code: "mollusques", label: "Mollusques" }
+  ],
+});
+
+const dishes = [
+    { name: "Le Classique", description: "Bœuf, cheddar affiné, oignons confits, sauce maison", priceCents: 1150, category: "Burgers", allergens: ["gluten", "lait", "oeufs", "moutarde", "sesame"], available: true, stock: null },
+    { name: "Le Montagnard", description: "Bœuf, raclette fondue, lard fumé, pommes grenaille", priceCents: 1350, category: "Burgers", allergens: ["gluten", "lait", "moutarde"], available: true, stock: null },
+    { name: "Le Poulet croustillant", description: "Filet de poulet pané, salade, sauce yaourt-citron", priceCents: 1250, category: "Burgers", allergens: ["gluten", "lait", "oeufs"], available: true, stock: null },
+    { name: "Le Burger du mois", description: "La recette surprise du chef (revient bientôt)", priceCents: 1450, category: "Burgers", allergens: ["gluten", "lait"], available: false, stock: null },
+    { name: "Wrap falafel", description: "Falafels, houmous, crudités, sauce tahini", priceCents: 1050, category: "Veggie", allergens: ["gluten", "sesame"], available: true, stock: null },
+    { name: "Bowl quinoa-patate douce", description: "Quinoa, patate douce rôtie, avocat, graines torréfiées", priceCents: 1150, category: "Veggie", allergens: ["sesame"], available: true, stock: null },
+    { name: "Burger végé", description: "Galette pois chiche-betterave, chèvre, roquette", priceCents: 1200, category: "Veggie", allergens: ["gluten", "lait"], available: true, stock: null },
+    { name: "Frites maison", description: "Pommes de terre fraîches, double cuisson", priceCents: 400, category: "Accompagnements", allergens: [], available: true, stock: null },
+    { name: "Patates douces frites", description: "Croustillantes, fleur de sel", priceCents: 500, category: "Accompagnements", allergens: [], available: true, stock: null },
+    { name: "Salade verte", description: "Jeunes pousses, vinaigrette moutarde-miel", priceCents: 350, category: "Accompagnements", allergens: ["moutarde"], available: true, stock: null },
+    { name: "Cookie noisettes", description: "Cuit sur place, cœur fondant", priceCents: 300, category: "Desserts", allergens: ["gluten", "oeufs", "lait", "fruits-a-coque"], available: true, stock: 12 },
+    { name: "Brownie", description: "Chocolat noir et noix de pécan", priceCents: 350, category: "Desserts", allergens: ["gluten", "oeufs", "lait", "fruits-a-coque"], available: true, stock: 8 },
+    { name: "Salade de fruits frais", description: "Fruits de saison, menthe fraîche", priceCents: 400, category: "Desserts", allergens: [], available: true, stock: null },
+    { name: "Citronnade maison", description: "Citrons pressés, sucre de canne", priceCents: 350, category: "Boissons", allergens: [], available: true, stock: null },
+    { name: "Thé glacé pêche", description: "Infusé à froid, peu sucré", priceCents: 350, category: "Boissons", allergens: [], available: true, stock: null },
+    { name: "Eau pétillante", description: "50 cl", priceCents: 250, category: "Boissons", allergens: [], available: true, stock: null }
+];
+
+for (const { category, allergens, ...dish } of dishes) {
+  await prisma.dish.create({
+    data: {
+      ...dish,
+      category: { connect: { name: category } },
+      allergens: { connect: allergens.map((code) => ({ code })) },
+    },
+  });
+}
