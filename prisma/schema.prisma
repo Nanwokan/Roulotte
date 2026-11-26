@@ -64,7 +64,7 @@ model Dish {
 model Order {
   id Int @id @default(autoincrement())
   status String
-  note Int
+  note String?
   totalCents Float
   user User @relation(fields: [userId], references: [id])
   userId Int

@@ -4,6 +4,7 @@ import categoryRoute from "./category.route.js";
 import allergenRoute from "./allergen.route.js";
 import dishRoute from "./dish.route.js";
 import authRoute from "./auth.route.js";
+import orderRoute from "./order.route.js";
 
 export default (app: Express) => {
   healthRoute(app);
@@ -11,4 +12,5 @@ export default (app: Express) => {
   allergenRoute(app);
   dishRoute(app);
   authRoute(app);
+  orderRoute(app);
 };
