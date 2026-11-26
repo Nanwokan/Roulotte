@@ -7,5 +7,5 @@ export function getPagination(dishes : Object[])
 
 function getPage(dishes : Object[])
 {
-    return dishes.length % dishesPerPage !== 0 ? dishes.length / dishesPerPage +1 : dishes.length / dishesPerPage  
+    return dishes.length % dishesPerPage !== 0 ? Math.floor(dishes.length / dishesPerPage) +1 : Math.floor(dishes.length / dishesPerPage)  
 }
