@@ -7,3 +7,4 @@ pnpm-workspace.yaml
 tsconfig.json
 /generated/prisma
 .vscode/
+*.db
