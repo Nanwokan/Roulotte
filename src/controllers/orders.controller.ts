@@ -2,8 +2,10 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import { HttpError } from "../utils/http-error.js";
-import { placeOrder, listOrders, getOrder } from "../services/orders.service.js";
-
+import { placeOrder, listOrders, getOrder, updateStatusOrderService } from "../services/orders.service.js";
+import { orderUpdateSchema } from "../schemas/order.schema.js";
+import { AuthHttpError } from "../fourni/auth/errors.js";
+import { prisma } from "../lib/prisma.js";
 const STATUSES = ["RECEIVED", "PREPARING", "READY", "PICKED_UP", "CANCELLED"];
 
 const createOrderSchema = z
@@ -59,6 +61,25 @@ export async function createOrder(req: Request, res: Response) {
     }
 
     const order = await placeOrder(req.user.id, result.data.items, result.data.note);
+    return res.status(201).location(`/orders/${order.id}`).json(order);
+  } catch (error) {
+    return handleError(res, error);
+  }
+}
+
+export async function updateStatusOrder(req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id)
+    const result = orderUpdateSchema.safeParse(req.body);
+    if (!result.success) {
+      throw new AuthHttpError(
+        400,
+        "VALIDATION_ERROR",
+        "Données invalides",
+      );
+    }
+
+    const order = await updateStatusOrderService(id, req.user, result.data.status);
     return res.status(201).location(`/orders/${order.id}`).json(order);
   } catch (error) {
     return handleError(res, error);
@@ -122,4 +143,8 @@ export async function getOrderById(req: Request, res: Response) {
   } catch (error) {
     return handleError(res, error);
   }
+}
+
+export async function paymentOrder(req: Request, res: Response) {
+  //
 }

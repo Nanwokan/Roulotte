@@ -8,5 +8,6 @@ export default (app: Express) => {
 
   app.post("/dishes", requireAuth, requireRole("ADMIN"), createDish);
   app.patch("/dishes/:id", requireAuth, requireRole("ADMIN"), updateDish);
+  app.put("/dishes/:id/image", requireAuth, requireRole("ADMIN"))
   app.delete("/dishes/:id", requireAuth, requireRole("ADMIN"), deleteDish);
 };

@@ -6,8 +6,11 @@ import {
   findOrders,
   findOrderById,
 } from "../repositories/orders.repository.js";
+import { AuthHttpError } from "../fourni/auth/errors.js";
+import { prisma } from "../lib/prisma.js";
 
 type Role = "CUSTOMER" | "STAFF" | "ADMIN";
+type STATUSES = "RECEIVED" | "PREPARING" | "READY" | "PICKED_UP" | "CANCELLED";
 
 function toOrderResponse(o: any) {
   return {
@@ -87,4 +90,22 @@ export async function getOrder(id: number, user: { id: number; role: Role }) {
     throw new HttpError(404, "NOT_FOUND", "Commande introuvable");
   }
   return toOrderResponse(order);
+}
+
+export async function updateStatusOrderService(id:number, user: { id: number; role: Role }, status: STATUSES) {
+  if (user.role !== "ADMIN") {
+    throw new AuthHttpError(403, "FORBIDDEN", "Ce role n'a pas les accreditations requises")
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id}})
+  
+  if (!order) {
+    throw new AuthHttpError(404, "NOT_FOUND", "Commande introuvable")
+  }
+
+  return prisma.order.update({
+    where:{id},
+    data: {status}
+  })
 }

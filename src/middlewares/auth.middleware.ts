@@ -14,7 +14,11 @@ export function requireAuth(req, _res, next) {
 }
 
 export function requireRole(...roles) {
+
   return (req, res, next) => {
+    console.log("Rôle utilisateur :", req.user?.role);
+    console.log("Rôles autorisés :", roles);
+    
     if (!req.user || !roles.includes(req.user.role)) {
       throw new AuthHttpError(403, "FORBIDDEN", "Rôle insuffisant")
     }

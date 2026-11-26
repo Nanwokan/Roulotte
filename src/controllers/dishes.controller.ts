@@ -1,6 +1,6 @@
 import { AuthHttpError } from "../fourni/auth/errors.js";
-import { dishSchema } from "../schemas/dish.schema.js";
-import { createDishService, getAllDishes, getDishById} from  "../services/dishes.service.js";
+import { dishSchema, dishUpdateSchema } from "../schemas/dish.schema.js";
+import { createDishService, updateDishService,getAllDishes, getDishById, deleteDishService} from  "../services/dishes.service.js";
 import {getPagination} from "../services/pagination.service.js"
 // controller
 // controller
@@ -37,25 +37,20 @@ export async function getDishes(req, res) {
   }
 }
 export async function getDish(req, res) {
-  try {
     const { id } = req.params;
 
     if (!/^\d+$/.test(id) || Number(id) < 1) {
-      return res.status(400).json({ error: "id doit être un entier >= 1" });
+      throw new AuthHttpError(400, "VALIDATION_ERROR", "id doit être un entier >= 1");
     }
 
     const dish = await getDishById(Number(id));
 
     // 404 : plat inexistant
     if (!dish) {
-      return res.status(404).json({ error: "Plat introuvable" });
+      throw new AuthHttpError(404, "NOT_FOUND", "Plat introuvable");
     }
 
     res.status(200).json(dish);
-  } catch (error) {
-    console.error("Error fetching dish:", error);
-    res.status(500).json({ error: "Failed to fetch dish" });
-  }
 }
 
 export async function createDish(req, res) {
@@ -77,8 +72,9 @@ export async function createDish(req, res) {
 }
 
 export async function updateDish(req, res) {
+  const id = Number(req.params.id)
 
-  const result = dishSchema.safeParse(req.body);
+  const result = dishUpdateSchema.safeParse(req.body);
   if (!result.success) {
     throw new AuthHttpError(
       400,
@@ -88,26 +84,14 @@ export async function updateDish(req, res) {
   }
 
   // créer le plat (le service lève 409 ou 422 si besoin)
-  const dish = await updateDishService(result.data);
+  const dish = await updateDishService(id,result.data);
 
   //répondre 201 + Location
-  return res.status(201).location(`/dishes/${dish.id}`).json(dish);
+  return res.status(200).json(dish);
 }
 
 export async function deleteDish(req, res) {
-
-  const result = dishSchema.safeParse(req.body);
-  if (!result.success) {
-    throw new AuthHttpError(
-      400,
-      "VALIDATION_ERROR",
-      "Données invalides",
-    );
-  }
-
-  // créer le plat (le service lève 409 ou 422 si besoin)
-  const dish = await deleteDishService(result.data);
-
-  //répondre 201 + Location
-  return res.status(201).location(`/dishes/${dish.id}`).json(dish);
+  const id = Number(req.params.id)
+  await deleteDishService(id);
+  return res.status(204).send();
 }

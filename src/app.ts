@@ -1,5 +1,5 @@
 import express from "express";
-import { authErrorHandler, installSecurity } from "./fourni/auth/index.js";
+import { authErrorHandler, AuthHttpError, installSecurity } from "./fourni/auth/index.js";
 import { config } from "dotenv";
 import registerRoutes from "./routes/index.js";
 
@@ -11,8 +11,11 @@ export function CreateApp() {
   app.use(express.json());
   registerRoutes(app); // les routes
 
-  // … vos routes …
-  app.use(authErrorHandler); // juste AVANT votre propre gestionnaire d'erreurs
+  app.use((req,res) => {
+    throw new AuthHttpError(404, "NOT_FOUND", "Route introuvable")
+  }); 
+
+  app.use(authErrorHandler);
 
   return app;
 }
