@@ -1,11 +1,10 @@
-const dishesPerPage = 50
-
-export function getPagination(dishes : Object[])
-{
-    return {"items" : dishes , "total" : dishes.length, "page" : getPage(dishes), "pageSize" : dishesPerPage}
-}
-
-function getPage(dishes : Object[])
-{
-    return dishes.length % dishesPerPage !== 0 ? Math.floor(dishes.length / dishesPerPage) +1 : Math.floor(dishes.length / dishesPerPage)  
+// services/pagination.service.ts
+export function getPagination<T>(items: T[], page: number, pageSize: number) {
+  const start = (page - 1) * pageSize;
+  return {
+    items: items.slice(start, start + pageSize),
+    total: items.length,
+    page,
+    pageSize,
+  };
 }

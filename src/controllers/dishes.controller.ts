@@ -2,12 +2,24 @@ import { AuthHttpError } from "../fourni/auth/errors.js";
 import { dishSchema, dishUpdateSchema } from "../schemas/dish.schema.js";
 import { createDishService, updateDishService,getAllDishes, getDishById, deleteDishService} from  "../services/dishes.service.js";
 import {getPagination} from "../services/pagination.service.js"
+import { paginationQuerySchema, zodDetails } from "../schemas/common.schema.js";
 // controller
 // controller
 export async function getDishes(req, res) {
   try {
     const { category, available, allergenFree } = req.query;
 
+    const pagination = paginationQuerySchema.safeParse(req.query);
+    if (!pagination.success) {
+      return res.status(400).json({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Données invalides",
+          details: zodDetails(pagination.error),
+        },
+      });
+    }
+    const { page, pageSize } = pagination.data;
     if (category !== undefined) {
       const id = Number(category);
       if (!Number.isInteger(id) || id < 1) {
@@ -30,8 +42,8 @@ export async function getDishes(req, res) {
       available: available !== undefined ? available === "true" : undefined,
       allergenFree: allergenCodes,
     });
-    res.status(200).json(getPagination(dishes, req.query));
-  } catch (error) {
+    res.status(200).json(getPagination(dishes, page, pageSize));
+    } catch (error) {
     console.error("Error fetching dishes:", error);
     res.status(500).json({ error: "Failed to fetch dishes" });
   }
