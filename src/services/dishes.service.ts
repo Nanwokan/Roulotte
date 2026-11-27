@@ -293,3 +293,4 @@ export async function deleteDishService(id: number) {
     where: { id },
   });
 }
+ 

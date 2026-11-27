@@ -1,14 +1,9 @@
 // repositories/user.repository.ts
 import { prisma } from "../lib/prisma.js";
+import type { AuthUserStore } from "../fourni/auth/auth.js";
 
-export function findUserByEmail(email: string) {
-  return prisma.user.findUnique({ where: { email } });
-}
-
-export function findUserById(id: number) {
-  return prisma.user.findUnique({ where: { id } });
-}
-
-export function createUser(data: { name: string; email: string; passwordHash: string }) {
-  return prisma.user.create({ data });
+export const userRepository: AuthUserStore = {
+  findByEmail: (email) => prisma.user.findUnique({ where: { email } }),
+  findById: (id) => prisma.user.findUnique({ where: { id } }),
+  create: (data) => prisma.user.create({ data }),
 }
