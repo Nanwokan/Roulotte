@@ -5,3 +5,9 @@ export function findAllAllergens() {
     orderBy: { code: "asc" },
   });
 }
+
+export function findExistingAllergenOfDish(codes: string[]) {
+  return prisma.allergen.findMany({
+    where: { code: { in: codes } },
+  });
+}

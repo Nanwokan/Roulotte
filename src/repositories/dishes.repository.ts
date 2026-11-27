@@ -1,4 +1,5 @@
 // repositories/dishes.repository.ts
+import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../lib/prisma.js";
 
 export type DishFilters = {
@@ -38,4 +39,17 @@ export function findDishById(id: number) {
     where: { id },
     select: dishSelect,
   });
+}
+
+export function findDishByName(name: string) {
+  return prisma.dish.findUnique({
+    where: { name },
+  });
+}
+
+export function createDish(data: Prisma.DishCreateInput) {
+  return prisma.dish.create({
+    data,
+    select: dishSelect,
+  })
 }

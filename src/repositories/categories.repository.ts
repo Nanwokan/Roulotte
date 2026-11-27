@@ -5,3 +5,9 @@ export function findAllCategories() {
     orderBy: { position: "asc" },
   });
 }
+
+export function findCategoryById(id: number) {
+  return prisma.category.findUnique({
+    where: {id}
+  })
+}
