@@ -3,6 +3,7 @@ import { authErrorHandler, AuthHttpError, installSecurity } from "./fourni/auth/
 import { config } from "dotenv";
 import registerRoutes from "./routes/index.js";
 import { createContainer } from "./container.js";
+import { notFound } from "./middlewares/not-found.middleware.js";
 
 export function CreateApp() {
   config();
@@ -14,11 +15,7 @@ export function CreateApp() {
   app.use("/auth", container.auth.router);
   registerRoutes(app, container.auth); // les routes
 
-  app.use((req,res) => {
-    throw new AuthHttpError(404, "NOT_FOUND", "Route introuvable")
-  }); 
-
   app.use(authErrorHandler);
-
+  app.use(notFound);
   return app;
 }
